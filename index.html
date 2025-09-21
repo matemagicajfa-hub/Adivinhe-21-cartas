@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Adivinhe a Carta — Cartas Gigantes V3 🎩🃏</title>
+<title>Adivinhe a Carta — Versão V4 🎩🃏</title>
 <style>
   :root{
-    --cardW:180px;
-    --cardH:260px;
+    --cardW:160px;
+    --cardH:240px;
   }
   *{box-sizing:border-box}
   body{margin:0; font-family:Inter,Arial,Helvetica,sans-serif; background:linear-gradient(180deg,#041024 0%, #071226 60%); color:#fff; display:flex; flex-direction:column; align-items:center; padding:18px; min-height:100vh;}
@@ -15,32 +15,35 @@
   h1{color:#ffd54f; margin:6px 0; font-size:30px}
   p.lead{color:#cfe8ff; max-width:980px; margin:6px auto;}
   .board{display:flex; gap:24px; justify-content:center; margin-top:20px; z-index:2; align-items:flex-start;}
-  .column{display:flex; flex-direction:column; gap:16px; align-items:center;}
+  .column{display:flex; flex-direction:column; gap:14px; align-items:center;}
   .scene{width:var(--cardW); height:var(--cardH); perspective:1000px;}
-  .card{width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform .7s; border-radius:14px; box-shadow:0 14px 34px rgba(0,0,0,0.6); cursor:pointer; user-select:none;}
+  .card{width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform .7s; border-radius:14px; box-shadow:0 14px 34px rgba(0,0,0,0.6); user-select:none;}
   .card.revealed{transform:rotateY(180deg);}
   .face{position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:14px; display:flex; flex-direction:column; justify-content:space-between; padding:12px; font-weight:900; box-sizing:border-box; border:2px solid rgba(0,0,0,0.25);}
   .front{background:#fff; color:#000; transform:rotateY(180deg);}
   .back{background:linear-gradient(135deg,#003366,#0055aa); color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800;}
-  .value-top{font-size:22px;}
-  .value-bottom{font-size:22px; transform:rotate(180deg);}
-  .suit-center{font-size:64px; text-align:center; margin-top:8px; line-height:1;}
+  .value-top{font-size:20px;}
+  .value-bottom{font-size:20px; transform:rotate(180deg);}
+  .suit-center{font-size:52px; text-align:center; margin-top:8px; line-height:1;}
   .red{color:#c62828}
   .black{color:#111}
   .controls{margin-top:20px; display:flex; gap:14px; flex-wrap:wrap; justify-content:center; z-index:3;}
-  button.primary{background:#ff6f00; border:none; color:#fff; padding:14px 20px; border-radius:10px; font-size:18px; cursor:pointer;}
+  button.primary{border:none; color:#fff; padding:14px 20px; border-radius:10px; font-size:18px; cursor:pointer;}
+  .col1{background:#e53935;}
+  .col2{background:#43a047;}
+  .col3{background:#1e88e5;}
   button.ghost{background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); color:#fff; padding:10px 14px; border-radius:8px; cursor:pointer;}
   .resultado{margin-top:18px; font-size:20px; color:#ffd54f; text-align:center; min-height:76px; z-index:3;}
   .avatars{margin-top:14px;}
-  .avatar{width:110px; margin:8px; vertical-align:middle; border-radius:10px; border:1px solid rgba(255,255,255,0.06);}
+  .avatar{width:96px; margin:8px; vertical-align:middle; border-radius:10px; border:1px solid rgba(255,255,255,0.06);}
   .estrelas{position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden;}
 </style>
 </head>
 <body>
   <div class="estrelas" aria-hidden="true"></div>
   <header>
-    <h1>🎩 Adivinhe a Carta — Cartas Gigantes</h1>
-    <p class="lead">Escolha uma carta e informe em qual coluna ela está. Depois de 3 rodadas mágicas, sua carta será revelada!</p>
+    <h1>🎩 Adivinhe a Carta</h1>
+    <p class="lead">Pense em uma carta e indique em qual coluna ela aparece. Depois de 3 rodadas mágicas, sua carta será revelada!</p>
     <div class="avatars">
       <img src="avatar_barba.png" class="avatar" alt="Mago com barba">
       <img src="avatar_sem_barba.png" class="avatar" alt="Mago sem barba">
@@ -48,12 +51,13 @@
   </header>
 
   <main style="width:100%; max-width:1400px; z-index:2;">
-    <div id="board" class="board" role="group" aria-label="Colunas das cartas"></div>
+    <div id="board" class="board"></div>
     <div class="controls" id="controls">
-      <button class="primary" id="col1">Coluna 1</button>
-      <button class="primary" id="col2">Coluna 2</button>
-      <button class="primary" id="col3">Coluna 3</button>
-      <button class="ghost" id="reiniciar">🔄 Reiniciar</button>
+      <button class="primary col1" id="col1">🟥 Coluna 1</button>
+      <button class="primary col2" id="col2">🟩 Coluna 2</button>
+      <button class="primary col3" id="col3">🟦 Coluna 3</button>
+      <button class="ghost" id="revelar" style="display:none;">🎩 Revelar Carta</button>
+      <button class="ghost" id="reiniciar">🔄 Participar novamente</button>
       <button class="ghost" id="toggleVoice">🔊 Voz: Ligada</button>
     </div>
     <div class="resultado" id="resultado">Rodada: <span id="rodada">1</span> de 3</div>
@@ -97,11 +101,12 @@ function startGame(){
   rodada = 1;
   document.getElementById('rodada').textContent = rodada;
   document.getElementById('resultado').textContent = 'Rodada: ' + rodada + ' de 3';
+  document.getElementById('revelar').style.display='none';
   let deck = shuffle(Array.from(FULL_DECK));
   selectedCards = deck.slice(0,21);
   dealColumns(selectedCards);
   renderBoard(true);
-  speak('Pense em uma carta entre as 21 mostradas. Indique em qual coluna ela está.');
+  speak('Pense em uma carta entre as 21 mostradas. Em qual coluna ela está?');
 }
 
 function dealColumns(list){
@@ -136,7 +141,7 @@ function renderBoard(autoFlip){
     setTimeout(()=>{
       const cards = document.querySelectorAll('.card');
       cards.forEach((el,i)=>{
-        setTimeout(()=> el.classList.add('revealed'), i*100);
+        setTimeout(()=> el.classList.add('revealed'), i*80);
       });
     }, 500);
   }
@@ -158,7 +163,8 @@ function chooseColumn(colIndex){
     renderBoard(true);
     speak('Em qual coluna está agora a sua carta?');
   } else {
-    finalize();
+    document.getElementById('revelar').style.display='inline-block';
+    speak('Clique em revelar carta para ver o resultado.');
   }
 }
 
@@ -173,6 +179,7 @@ document.getElementById('col1').addEventListener('click', ()=>chooseColumn(0));
 document.getElementById('col2').addEventListener('click', ()=>chooseColumn(1));
 document.getElementById('col3').addEventListener('click', ()=>chooseColumn(2));
 document.getElementById('reiniciar').addEventListener('click', ()=>startGame());
+document.getElementById('revelar').addEventListener('click', ()=>finalize());
 
 window.addEventListener('load', ()=>{ startGame(); });
 </script>
