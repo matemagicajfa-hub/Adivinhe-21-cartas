@@ -3,66 +3,64 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Adivinhe a Carta - 21 Cartas 🎩🃏</title>
+<title>Adivinhe a Carta — 21 Cartas v2 🎩🃏</title>
 <style>
-  :root{/*bg:#071226; --cardW:80px; --cardH:120px;*/}
-  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#fff;display:flex;flex-direction:column;align-items:center;padding:18px;}
-  header{text-align:center;max-width:900px;}
-  h1{color:#ffd54f;margin:6px 0;}
-  p.lead{color:#cfe8ff;max-width:900px;}
-  .board{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px;}
-  .column{display:flex;flex-direction:column;gap:8px;align-items:center;}
-  .scene{width:var(--cardW);height:var(--cardH);perspective:600px;}
-  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .6s;cursor:pointer}
-  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:8px;border:1px solid rgba(0,0,0,0.6);display:flex;flex-direction:column;justify-content:space-between;padding:6px;font-weight:700}
-  .front{background:#fff;color:#000;transform:rotateY(180deg);}
-  .back{background:#005;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;}
-  .value-top{text-align:left;font-size:16px}
-  .value-bottom{text-align:right;transform:rotate(180deg);font-size:16px}
-  .suit-center{text-align:center;margin-top:8px;font-size:34px}
-  .controls{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
-  button.primary{background:#ff6f00;border:none;color:#fff;padding:10px 16px;border-radius:8px;font-size:16px;cursor:pointer}
-  button.ghost{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px 12px;border-radius:8px;cursor:pointer}
-  .resultado{margin-top:12px;font-size:18px;color:#ffd54f;text-align:center;min-height:48px}
-  .avatars{margin-top:10px}
-  .avatar{width:78px;margin:4px;vertical-align:middle;border-radius:8px;border:1px solid rgba(255,255,255,0.05)}
-  .estrelas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0}
-  @media (max-width:600px){:root{--cardW:65px;--cardH:95px;} h1{font-size:1.4rem} .lead{font-size:0.95rem} button.primary{width:92%;font-size:18px}}
+  :root{/*cardW:80px;--cardH:120px;*/}
+  body{margin:0; font-family:Arial,Helvetica,sans-serif; background:#071226; color:#fff; display:flex; flex-direction:column; align-items:center; padding:18px;}
+  header{text-align:center; max-width:980px;}
+  h1{color:#ffd54f; margin:6px 0;}
+  p.lead{color:#cfe8ff; max-width:980px;}
+  .board{display:flex; gap:18px; justify-content:center; margin-top:12px; z-index:2}
+  .column{display:flex; flex-direction:column; gap:10px; align-items:center;}
+  .scene{width:var(--cardW); height:var(--cardH); perspective:900px;}
+  .card{width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform .7s; border-radius:10px; box-shadow:0 6px 16px rgba(0,0,0,0.6);}
+  .card.revealed{transform:rotateY(180deg);}
+  .face{position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:10px; display:flex; flex-direction:column; justify-content:space-between; padding:8px; font-weight:800; box-sizing:border-box; border:2px solid rgba(0,0,0,0.35);}
+  .front{background:#fff; color:#000; transform:rotateY(180deg);}
+  .back{background:linear-gradient(135deg,#003366,#0055aa); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px;}
+  .value-top{text-align:left; font-size:16px;}
+  .value-bottom{text-align:right; transform:rotate(180deg); font-size:16px;}
+  .suit-center{text-align:center; margin-top:6px; font-size:34px;}
+  .controls{margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center; z-index:3;}
+  button.primary{background:#ff6f00; border:none; color:#fff; padding:10px 16px; border-radius:8px; font-size:16px; cursor:pointer;}
+  button.ghost{background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer;}
+  .resultado{margin-top:14px; font-size:18px; color:#ffd54f; text-align:center; min-height:60px; z-index:3;}
+  .avatars{margin-top:10px;}
+  .avatar{width:78px; margin:4px; vertical-align:middle; border-radius:8px; border:1px solid rgba(255,255,255,0.06);}
+  .estrelas{position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:0;}
+  @media (max-width:600px){:root{/*cardW:65px;--cardH:95px;*/} h1{font-size:1.4rem} p.lead{font-size:0.95rem} button.primary{width:92%; font-size:18px}}
 </style>
 </head>
 <body>
   <div class="estrelas" aria-hidden="true"></div>
   <header>
     <h1>🎩 Adivinhe a Carta — Truque das 21 Cartas</h1>
-    <p class="lead">Pense numa carta das que aparecem. Não diga qual — apenas diga em qual coluna (1, 2 ou 3) ela está. Vamos repetir 3 vezes e eu adivinho!</p>
+    <p class="lead">Pense numa carta entre as 21 mostradas. As cartas começam viradas. Elas vão virar automaticamente para revelar. Diga em qual coluna (1, 2 ou 3) está sua carta. Repetimos 3 vezes e eu revelo a carta!</p>
     <div class="avatars">
       <img src="avatar_barba.png" class="avatar" alt="Mago com barba">
       <img src="avatar_sem_barba.png" class="avatar" alt="Mago sem barba">
     </div>
   </header>
 
-  <main style="width:100%;max-width:980px;z-index:2">
+  <main style="width:100%; max-width:980px; z-index:2;">
     <div id="board" class="board" role="group" aria-label="Colunas das cartas"></div>
-
     <div class="controls" id="controls">
       <button class="primary" id="col1">Coluna 1</button>
       <button class="primary" id="col2">Coluna 2</button>
       <button class="primary" id="col3">Coluna 3</button>
       <button class="ghost" id="reiniciar">🔄 Reiniciar</button>
     </div>
-
     <div class="resultado" id="resultado">Rodada: <span id="rodada">1</span> de 3</div>
-    <div style="text-align:center;margin-top:8px;">
+    <div style="text-align:center; margin-top:8px; z-index:3;">
       <button class="ghost" id="toggleVoice">🔊 Voz: Ligada</button>
       <button class="ghost" id="toggleSound">🔈 Som mágico: Ligado</button>
     </div>
   </main>
 
-  <div vw class="enabled" style="z-index:9999">
+  <!-- VLibras -->
+  <div vw class="enabled" style="z-index:9999;">
     <div vw-access-button class="active" aria-hidden="false"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
-    </div>
+    <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
   </div>
   <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
   <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
@@ -70,7 +68,6 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 
 <script>
-// Utilidades: deck, shuffle, render
 const FULL_DECK = [{"id": 1, "label": "A\u2665", "rank": "A", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 2, "label": "2\u2665", "rank": "2", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 3, "label": "3\u2665", "rank": "3", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 4, "label": "4\u2665", "rank": "4", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 5, "label": "5\u2665", "rank": "5", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 6, "label": "6\u2665", "rank": "6", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 7, "label": "7\u2665", "rank": "7", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 8, "label": "8\u2665", "rank": "8", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 9, "label": "9\u2665", "rank": "9", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 10, "label": "10\u2665", "rank": "10", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 11, "label": "J\u2665", "rank": "J", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 12, "label": "Q\u2665", "rank": "Q", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 13, "label": "K\u2665", "rank": "K", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 14, "label": "A\u2666", "rank": "A", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 15, "label": "2\u2666", "rank": "2", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 16, "label": "3\u2666", "rank": "3", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 17, "label": "4\u2666", "rank": "4", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 18, "label": "5\u2666", "rank": "5", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 19, "label": "6\u2666", "rank": "6", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 20, "label": "7\u2666", "rank": "7", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 21, "label": "8\u2666", "rank": "8", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 22, "label": "9\u2666", "rank": "9", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 23, "label": "10\u2666", "rank": "10", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 24, "label": "J\u2666", "rank": "J", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 25, "label": "Q\u2666", "rank": "Q", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 26, "label": "K\u2666", "rank": "K", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 27, "label": "A\u2663", "rank": "A", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 28, "label": "2\u2663", "rank": "2", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 29, "label": "3\u2663", "rank": "3", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 30, "label": "4\u2663", "rank": "4", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 31, "label": "5\u2663", "rank": "5", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 32, "label": "6\u2663", "rank": "6", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 33, "label": "7\u2663", "rank": "7", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 34, "label": "8\u2663", "rank": "8", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 35, "label": "9\u2663", "rank": "9", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 36, "label": "10\u2663", "rank": "10", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 37, "label": "J\u2663", "rank": "J", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 38, "label": "Q\u2663", "rank": "Q", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 39, "label": "K\u2663", "rank": "K", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 40, "label": "A\u2660", "rank": "A", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 41, "label": "2\u2660", "rank": "2", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 42, "label": "3\u2660", "rank": "3", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 43, "label": "4\u2660", "rank": "4", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 44, "label": "5\u2660", "rank": "5", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 45, "label": "6\u2660", "rank": "6", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 46, "label": "7\u2660", "rank": "7", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 47, "label": "8\u2660", "rank": "8", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 48, "label": "9\u2660", "rank": "9", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 49, "label": "10\u2660", "rank": "10", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 50, "label": "J\u2660", "rank": "J", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 51, "label": "Q\u2660", "rank": "Q", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 52, "label": "K\u2660", "rank": "K", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}];
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
@@ -80,9 +77,10 @@ let selectedCards = [];
 let voiceEnabled = true;
 let soundEnabled = true;
 
-document.addEventListener('click', function(e){{ if(e.target && e.target.id==='toggleVoice'){ voiceEnabled=!voiceEnabled; e.target.textContent = voiceEnabled ? '🔊 Voz: Ligada' : '🔇 Voz: Desligada'; } if(e.target && e.target.id==='toggleSound'){ soundEnabled=!soundEnabled; e.target.textContent = soundEnabled ? '🔈 Som mágico: Ligado' : '🔈 Som mágico: Desligado'; } }}, false);
+document.getElementById('toggleVoice').addEventListener('click', ()=>{ voiceEnabled=!voiceEnabled; document.getElementById('toggleVoice').textContent = voiceEnabled ? '🔊 Voz: Ligada' : '🔇 Voz: Desligada'; });
+document.getElementById('toggleSound').addEventListener('click', ()=>{ soundEnabled=!soundEnabled; document.getElementById('toggleSound').textContent = soundEnabled ? '🔈 Som mágico: Ligado' : '🔈 Som mágico: Desligado'; });
 
-function speak(text){ if(!voiceEnabled) return; try{ let u=new SpeechSynthesisUtterance(text); u.lang='pt-BR'; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
+function speak(text){ if(!voiceEnabled) return; try{ const u=new SpeechSynthesisUtterance(text); u.lang='pt-BR'; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
 
 function startGame(){
   rodada = 1;
@@ -91,8 +89,8 @@ function startGame(){
   let deck = shuffle(Array.from(FULL_DECK));
   selectedCards = deck.slice(0,21);
   dealColumns(selectedCards);
-  renderBoard();
-  speak('Pense em uma carta entre as 21 mostradas. Diga em qual coluna ela está.');
+  renderBoard(true);
+  speak('Pense em uma carta entre as 21 mostradas. Observe as cartas virando agora.');
 }
 
 function dealColumns(list){
@@ -100,7 +98,7 @@ function dealColumns(list){
   for(let i=0;i<21;i++){ columns[i%3].push(list[i]); }
 }
 
-function renderBoard(){
+function renderBoard(autoFlip){
   const board = document.getElementById('board');
   board.innerHTML = '';
   for(let c=0;c<3;c++){
@@ -122,52 +120,58 @@ function renderBoard(){
     }
     board.appendChild(colDiv);
   }
-  // ensure backs visible
-  const allCards = document.querySelectorAll('.card');
-  allCards.forEach((el)=>el.style.transform='rotateY(0deg)');
+  // set initial state (facing down)
+  const all = document.querySelectorAll('.card');
+  all.forEach(el=>el.classList.remove('revealed'));
+  if(autoFlip){
+    // flip with cascade
+    setTimeout(()=>{
+      const cards = document.querySelectorAll('.card');
+      cards.forEach((el,i)=>{
+        setTimeout(()=> el.classList.add('revealed'), i*80);
+      });
+    }, 400);
+  }
 }
 
 function chooseColumn(colIndex){
   if(rodada>3) return;
-  // determine order: put chosen column in middle
+  // reorganize putting chosen column in middle
   let order;
   if(colIndex===0) order=[1,0,2];
   else if(colIndex===1) order=[0,1,2];
   else order=[0,2,1];
-  let newList=[];
+  let newList = [];
   for(let r=0;r<7;r++){ for(let k=0;k<3;k++){ let col = columns[order[k]]; newList.push(col[r]); } }
   selectedCards = newList.slice();
   dealColumns(selectedCards);
   rodada += 1;
   document.getElementById('rodada').textContent = Math.min(rodada,3);
   if(rodada<=3){
-    animateRevealThenHide();
-    speak('Recebido. Preparando próxima rodada. Em qual coluna está agora?');
-    renderBoard();
-  } else { finalize(); }
-}
-
-function animateRevealThenHide(){
-  const all = document.querySelectorAll('.card');
-  all.forEach((el,i)=>{ setTimeout(()=>{ el.style.transform='rotateY(180deg)'; }, i*20); setTimeout(()=>{ el.style.transform='rotateY(0deg)'; }, 500 + i*10); });
+    // show brief flip back animation then reorder and flip again
+    const all = document.querySelectorAll('.card');
+    all.forEach((el,i)=>{ setTimeout(()=> el.classList.remove('revealed'), i*10); });
+    setTimeout(()=>{ renderBoard(true); speak('Coluna recebida. Em qual coluna está agora?'); }, 550);
+  } else {
+    finalize();
+  }
 }
 
 function finalize(){
   const chosen = selectedCards[10];
-  document.getElementById('resultado').innerHTML = '🎩 <strong>A carta escolhida é: ' + chosen.label + ' (' + chosen.rank + ' de ' + chosen.suit.name + ')</strong><br>🙌 Obrigado por participar! Professores: Rafael Oliveira e Ronaldo Soares';
+  document.getElementById('resultado').innerHTML = '🎩 <strong>A carta escolhida é: ' + chosen.label + ' (' + chosen.rank + ' de ' + chosen.suit.name + ')</strong><br>🙌 Agradecemos a sua participação.<br>👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares';
   speak('A carta escolhida é ' + chosen.rank + ' de ' + chosen.suit.name);
   if(soundEnabled) try{ document.getElementById('somMagico').play().catch(()=>{}); }catch(e){}
   confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
-  setTimeout(()=>{ showFinalCardOverlay(chosen); }, 400);
+  setTimeout(()=> showFinalOverlay(chosen), 600);
 }
 
-function showFinalCardOverlay(card){
+function showFinalOverlay(card){
   const overlay = document.createElement('div');
   overlay.style.position='fixed'; overlay.style.left=0; overlay.style.top=0; overlay.style.width='100%'; overlay.style.height='100%';
-  overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.6)';
-  overlay.style.zIndex=9999;
+  overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.6)'; overlay.style.zIndex=9999;
   const box = document.createElement('div'); box.style.background='#fff'; box.style.color='#000'; box.style.padding='18px'; box.style.borderRadius='12px'; box.style.textAlign='center';
-  box.innerHTML = '<div style="font-size:28px;font-weight:800">' + card.label + '</div>' + '<div style="font-size:18px;margin-top:8px">' + card.rank + ' de ' + card.suit.name + '</div>' +
+  box.innerHTML = '<div style="font-size:28px;font-weight:900">' + card.label + '</div>' + '<div style="font-size:18px;margin-top:8px">' + card.rank + ' de ' + card.suit.name + '</div>' +
                   '<div style="margin-top:12px"><button class="primary" id="playAgain">🔄 Participar novamente</button></div>';
   overlay.appendChild(box);
   document.body.appendChild(overlay);
@@ -179,9 +183,10 @@ document.getElementById('col2').addEventListener('click', ()=>chooseColumn(1));
 document.getElementById('col3').addEventListener('click', ()=>chooseColumn(2));
 document.getElementById('reiniciar').addEventListener('click', ()=>startGame());
 
+// stars background
 (function createStars(){
   const c = document.querySelector('.estrelas');
-  for(let i=0;i<80;i++){ const s = document.createElement('div'); s.style.position='absolute'; s.style.left=(Math.random()*100)+'%'; s.style.top=(Math.random()*100)+'%'; s.style.width=(1+Math.random()*3)+'px'; s.style.height=s.style.width; s.style.background='rgba(255,255,255,'+(0.2+Math.random()*0.8)+')'; s.style.borderRadius='50%'; s.style.filter='blur(0.4px)'; c.appendChild(s); }
+  for(let i=0;i<80;i++){ const s = document.createElement('div'); s.style.position='absolute'; s.style.left=(Math.random()*100)+'%'; s.style.top=(Math.random()*100)+'%'; s.style.width=(1+Math.random()*3)+'px'; s.style.height=s.style.width; s.style.background='rgba(255,255,255,'+(0.2+Math.random()*0.8)+')'; s.style.borderRadius='50%'; s.style.filter='blur(0.4px)'; s.style.opacity=0.8*(Math.random()); c.appendChild(s); }
 })();
 
 window.addEventListener('load', ()=>{ startGame(); });
