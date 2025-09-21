@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Adivinhe a Carta — Versão V9 🎩🃏</title>
+<title>Adivinhe a Carta — Versão V11 🎩🃏</title>
 <style>
   :root{ --cardW:160px; --cardH:240px; }
   body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#041024,#071226);color:#fff;display:flex;flex-direction:column;align-items:center;padding:16px;min-height:100vh;}
@@ -88,7 +88,10 @@ function speak(t){
 
 function startGame(){
   rodada=1;
-  document.getElementById('rodada').textContent=rodada;
+  const rodadaElement = document.getElementById('rodada');
+  if (rodadaElement) {
+    rodadaElement.textContent = rodada;
+  }
   document.getElementById('resultado').textContent='Rodada: '+rodada+' de 3';
   document.getElementById('revelar').style.display='none';
   document.querySelectorAll('input[name="col"]').forEach(r=>r.checked=false);
@@ -153,7 +156,10 @@ function chooseColumn(colIndex){
   selectedCards=newList.slice();
   dealColumns(selectedCards);
   rodada+=1;
-  document.getElementById('rodada').textContent=Math.min(rodada,3);
+  const rodadaElement = document.getElementById('rodada');
+  if (rodadaElement) {
+    rodadaElement.textContent = Math.min(rodada,3);
+  }
   if(rodada<=3){
     renderBoard(true);
     speak('Em qual coluna está agora a sua carta?');
