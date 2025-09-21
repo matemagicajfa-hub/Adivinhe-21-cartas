@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Adivinhe a Carta — Versão V14 🎩🃏</title>
+<title>Adivinhe a Carta — Versão V16 🎩🃏</title>
 <style>
   :root{ --cardW:160px; --cardH:240px; }
   body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#041024,#071226);color:#fff;display:flex;flex-direction:column;align-items:center;padding:16px;min-height:100vh;}
@@ -171,7 +171,7 @@ function chooseColumn(colIndex){
 }
 
 function finalize(){
-  const chosen=selectedCards[10];
+  const chosen=selectedCards[10];  // The correct card is at index 10 (11th card)
   document.getElementById('resultado').innerHTML='🎩 <strong>A carta escolhida é: '+chosen.label+' ('+chosen.rank+' de '+chosen.suit.name+')</strong><br>🙌 Agradecemos a sua participação.<br>👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares';
   speak('A carta escolhida é '+chosen.rank+' de '+chosen.suit.name);
   confetti({particleCount:300,spread:160,origin:{y:0.5}});
