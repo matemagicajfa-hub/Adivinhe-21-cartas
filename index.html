@@ -3,187 +3,84 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Adivinhe a Carta — Versão V4 🎩🃏</title>
+<title>Adivinhe a Carta — Versão V5 🎩🃏</title>
 <style>
-  :root{
-    --cardW:160px;
-    --cardH:240px;
-  }
-  *{box-sizing:border-box}
-  body{margin:0; font-family:Inter,Arial,Helvetica,sans-serif; background:linear-gradient(180deg,#041024 0%, #071226 60%); color:#fff; display:flex; flex-direction:column; align-items:center; padding:18px; min-height:100vh;}
-  header{text-align:center; max-width:1100px;}
-  h1{color:#ffd54f; margin:6px 0; font-size:30px}
-  p.lead{color:#cfe8ff; max-width:980px; margin:6px auto;}
-  .board{display:flex; gap:24px; justify-content:center; margin-top:20px; z-index:2; align-items:flex-start;}
-  .column{display:flex; flex-direction:column; gap:14px; align-items:center;}
-  .scene{width:var(--cardW); height:var(--cardH); perspective:1000px;}
-  .card{width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform .7s; border-radius:14px; box-shadow:0 14px 34px rgba(0,0,0,0.6); user-select:none;}
+  :root{ --cardW:160px; --cardH:240px; }
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#041024,#071226);color:#fff;display:flex;flex-direction:column;align-items:center;padding:16px;min-height:100vh;}
+  h1{color:#ffd54f;font-size:28px;margin:10px 0;}
+  p{color:#cfe8ff;max-width:900px;text-align:center;}
+  .board{display:flex;gap:24px;justify-content:center;margin-top:20px;}
+  .column{display:flex;flex-direction:column;gap:12px;}
+  .scene{width:var(--cardW);height:var(--cardH);perspective:1000px;}
+  .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .6s;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.6);}
   .card.revealed{transform:rotateY(180deg);}
-  .face{position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:14px; display:flex; flex-direction:column; justify-content:space-between; padding:12px; font-weight:900; box-sizing:border-box; border:2px solid rgba(0,0,0,0.25);}
-  .front{background:#fff; color:#000; transform:rotateY(180deg);}
-  .back{background:linear-gradient(135deg,#003366,#0055aa); color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800;}
-  .value-top{font-size:20px;}
-  .value-bottom{font-size:20px; transform:rotate(180deg);}
-  .suit-center{font-size:52px; text-align:center; margin-top:8px; line-height:1;}
-  .red{color:#c62828}
-  .black{color:#111}
-  .controls{margin-top:20px; display:flex; gap:14px; flex-wrap:wrap; justify-content:center; z-index:3;}
-  button.primary{border:none; color:#fff; padding:14px 20px; border-radius:10px; font-size:18px; cursor:pointer;}
-  .col1{background:#e53935;}
-  .col2{background:#43a047;}
-  .col3{background:#1e88e5;}
-  button.ghost{background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); color:#fff; padding:10px 14px; border-radius:8px; cursor:pointer;}
-  .resultado{margin-top:18px; font-size:20px; color:#ffd54f; text-align:center; min-height:76px; z-index:3;}
-  .avatars{margin-top:14px;}
-  .avatar{width:96px; margin:8px; vertical-align:middle; border-radius:10px; border:1px solid rgba(255,255,255,0.06);}
-  .estrelas{position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden;}
+  .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;display:flex;flex-direction:column;justify-content:space-between;padding:10px;}
+  .front{background:#fff;color:#000;transform:rotateY(180deg);}
+  .back{background:linear-gradient(135deg,#003366,#0055aa);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold;}
+  .value-top,.value-bottom{font-size:18px;}
+  .value-bottom{transform:rotate(180deg);}
+  .suit-center{font-size:46px;text-align:center;line-height:1;}
+  .red{color:#c62828;} .black{color:#111;}
+  .controls{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .question{font-size:20px;margin-bottom:8px;}
+  .btn-group{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+  button{border:none;color:#fff;padding:14px 20px;border-radius:10px;font-size:18px;cursor:pointer;}
+  .col1{background:#e53935;} .col2{background:#43a047;} .col3{background:#1e88e5;}
+  .ghost{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);}
+  .resultado{margin-top:18px;font-size:20px;color:#ffd54f;text-align:center;min-height:76px;}
+  .avatars{margin-top:14px;} .avatar{width:96px;margin:8px;}
+  .estrelas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
 </style>
 </head>
 <body>
-  <div class="estrelas" aria-hidden="true"></div>
-  <header>
-    <h1>🎩 Adivinhe a Carta</h1>
-    <p class="lead">Pense em uma carta e indique em qual coluna ela aparece. Depois de 3 rodadas mágicas, sua carta será revelada!</p>
-    <div class="avatars">
-      <img src="avatar_barba.png" class="avatar" alt="Mago com barba">
-      <img src="avatar_sem_barba.png" class="avatar" alt="Mago sem barba">
-    </div>
-  </header>
+<div class="estrelas"></div>
+<h1>🎩 Adivinhe a Carta</h1>
+<p>Pense em uma carta, indique em qual coluna ela está em cada rodada, e ao final ela será revelada!</p>
+<div class="avatars">
+  <img src="avatar_barba.png" class="avatar" alt="Mago com barba">
+  <img src="avatar_sem_barba.png" class="avatar" alt="Mago sem barba">
+</div>
 
-  <main style="width:100%; max-width:1400px; z-index:2;">
-    <div id="board" class="board"></div>
-    <div class="controls" id="controls">
-      <button class="primary col1" id="col1">🟥 Coluna 1</button>
-      <button class="primary col2" id="col2">🟩 Coluna 2</button>
-      <button class="primary col3" id="col3">🟦 Coluna 3</button>
-      <button class="ghost" id="revelar" style="display:none;">🎩 Revelar Carta</button>
-      <button class="ghost" id="reiniciar">🔄 Participar novamente</button>
-      <button class="ghost" id="toggleVoice">🔊 Voz: Ligada</button>
-    </div>
-    <div class="resultado" id="resultado">Rodada: <span id="rodada">1</span> de 3</div>
-  </main>
+<div id="board" class="board"></div>
 
-  <!-- VLibras -->
-  <div vw class="enabled" style="z-index:9999;">
-    <div vw-access-button class="active" aria-hidden="false"></div>
-    <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+<div class="controls">
+  <div class="question">👉 Em qual coluna está a sua carta?</div>
+  <div class="btn-group">
+    <button class="col1" id="col1">🔴 Coluna 1</button>
+    <button class="col2" id="col2">🟢 Coluna 2</button>
+    <button class="col3" id="col3">🔵 Coluna 3</button>
   </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+  <button class="ghost" id="revelar" style="display:none;">🎩 Revelar Carta</button>
+  <button class="ghost" id="reiniciar">🔄 Participar novamente</button>
+  <button class="ghost" id="toggleVoice">🔊 Voz: Ligada</button>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<div class="resultado" id="resultado">Rodada: <span id="rodada">1</span> de 3</div>
+
+<!-- VLibras -->
+<div vw class="enabled"><div vw-access-button class="active"></div><div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div></div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 
 <script>
 const FULL_DECK = [{"id": 1, "label": "A\u2665", "rank": "A", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 2, "label": "2\u2665", "rank": "2", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 3, "label": "3\u2665", "rank": "3", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 4, "label": "4\u2665", "rank": "4", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 5, "label": "5\u2665", "rank": "5", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 6, "label": "6\u2665", "rank": "6", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 7, "label": "7\u2665", "rank": "7", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 8, "label": "8\u2665", "rank": "8", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 9, "label": "9\u2665", "rank": "9", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 10, "label": "10\u2665", "rank": "10", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 11, "label": "J\u2665", "rank": "J", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 12, "label": "Q\u2665", "rank": "Q", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 13, "label": "K\u2665", "rank": "K", "suit": {"sym": "\u2665", "name": "Copas", "color": "red"}}, {"id": 14, "label": "A\u2666", "rank": "A", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 15, "label": "2\u2666", "rank": "2", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 16, "label": "3\u2666", "rank": "3", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 17, "label": "4\u2666", "rank": "4", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 18, "label": "5\u2666", "rank": "5", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 19, "label": "6\u2666", "rank": "6", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 20, "label": "7\u2666", "rank": "7", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 21, "label": "8\u2666", "rank": "8", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 22, "label": "9\u2666", "rank": "9", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 23, "label": "10\u2666", "rank": "10", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 24, "label": "J\u2666", "rank": "J", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 25, "label": "Q\u2666", "rank": "Q", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 26, "label": "K\u2666", "rank": "K", "suit": {"sym": "\u2666", "name": "Ouros", "color": "red"}}, {"id": 27, "label": "A\u2663", "rank": "A", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 28, "label": "2\u2663", "rank": "2", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 29, "label": "3\u2663", "rank": "3", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 30, "label": "4\u2663", "rank": "4", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 31, "label": "5\u2663", "rank": "5", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 32, "label": "6\u2663", "rank": "6", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 33, "label": "7\u2663", "rank": "7", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 34, "label": "8\u2663", "rank": "8", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 35, "label": "9\u2663", "rank": "9", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 36, "label": "10\u2663", "rank": "10", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 37, "label": "J\u2663", "rank": "J", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 38, "label": "Q\u2663", "rank": "Q", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 39, "label": "K\u2663", "rank": "K", "suit": {"sym": "\u2663", "name": "Paus", "color": "black"}}, {"id": 40, "label": "A\u2660", "rank": "A", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 41, "label": "2\u2660", "rank": "2", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 42, "label": "3\u2660", "rank": "3", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 43, "label": "4\u2660", "rank": "4", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 44, "label": "5\u2660", "rank": "5", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 45, "label": "6\u2660", "rank": "6", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 46, "label": "7\u2660", "rank": "7", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 47, "label": "8\u2660", "rank": "8", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 48, "label": "9\u2660", "rank": "9", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 49, "label": "10\u2660", "rank": "10", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 50, "label": "J\u2660", "rank": "J", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 51, "label": "Q\u2660", "rank": "Q", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}, {"id": 52, "label": "K\u2660", "rank": "K", "suit": {"sym": "\u2660", "name": "Espadas", "color": "black"}}];
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-
-let rodada = 1;
-let columns = [[],[],[]];
-let selectedCards = [];
-let voiceEnabled = true;
-
-document.getElementById('toggleVoice').addEventListener('click', ()=>{
-  voiceEnabled = !voiceEnabled;
-  document.getElementById('toggleVoice').textContent = voiceEnabled ? '🔊 Voz: Ligada' : '🔇 Voz: Desligada';
-});
-
-function speak(text){
-  if(!voiceEnabled) return;
-  try{
-    const u=new SpeechSynthesisUtterance(text);
-    u.lang='pt-BR';
-    speechSynthesis.cancel();
-    speechSynthesis.speak(u);
-  }catch(e){}
-}
-
-function startGame(){
-  rodada = 1;
-  document.getElementById('rodada').textContent = rodada;
-  document.getElementById('resultado').textContent = 'Rodada: ' + rodada + ' de 3';
-  document.getElementById('revelar').style.display='none';
-  let deck = shuffle(Array.from(FULL_DECK));
-  selectedCards = deck.slice(0,21);
-  dealColumns(selectedCards);
-  renderBoard(true);
-  speak('Pense em uma carta entre as 21 mostradas. Em qual coluna ela está?');
-}
-
-function dealColumns(list){
-  columns = [[],[],[]];
-  for(let i=0;i<21;i++){ columns[i%3].push(list[i]); }
-}
-
-function renderBoard(autoFlip){
-  const board = document.getElementById('board');
-  board.innerHTML = '';
-  for(let c=0;c<3;c++){
-    const colDiv = document.createElement('div');
-    colDiv.className = 'column';
-    for(let i=0;i<columns[c].length;i++){
-      const card = columns[c][i];
-      const scene = document.createElement('div'); scene.className='scene';
-      const cardEl = document.createElement('div'); cardEl.className='card';
-      const front = document.createElement('div'); front.className='face front';
-      front.innerHTML = '<div class="value-top '+(card.suit.color==='red'?'red':'black')+'">'+card.rank+card.suit.sym+'</div>' +
-                        '<div class="suit-center '+(card.suit.color==='red'?'red':'black')+'">'+card.suit.sym+'</div>' +
-                        '<div class="value-bottom '+(card.suit.color==='red'?'red':'black')+'">'+card.rank+card.suit.sym+'</div>';
-      const back = document.createElement('div'); back.className='face back'; back.textContent = 'MATEMÁGICA';
-      cardEl.appendChild(front); cardEl.appendChild(back);
-      scene.appendChild(cardEl);
-      colDiv.appendChild(scene);
-    }
-    board.appendChild(colDiv);
-  }
-  const all = document.querySelectorAll('.card');
-  all.forEach(el=>el.classList.remove('revealed'));
-  if(autoFlip){
-    setTimeout(()=>{
-      const cards = document.querySelectorAll('.card');
-      cards.forEach((el,i)=>{
-        setTimeout(()=> el.classList.add('revealed'), i*80);
-      });
-    }, 500);
-  }
-}
-
-function chooseColumn(colIndex){
-  if(rodada>3) return;
-  let order;
-  if(colIndex===0) order=[1,0,2];
-  else if(colIndex===1) order=[0,1,2];
-  else order=[0,2,1];
-  let newList = [];
-  for(let r=0;r<7;r++){ for(let k=0;k<3;k++){ let col = columns[order[k]]; newList.push(col[r]); } }
-  selectedCards = newList.slice();
-  dealColumns(selectedCards);
-  rodada += 1;
-  document.getElementById('rodada').textContent = Math.min(rodada,3);
-  if(rodada<=3){
-    renderBoard(true);
-    speak('Em qual coluna está agora a sua carta?');
-  } else {
-    document.getElementById('revelar').style.display='inline-block';
-    speak('Clique em revelar carta para ver o resultado.');
-  }
-}
-
-function finalize(){
-  const chosen = selectedCards[10];
-  document.getElementById('resultado').innerHTML = '🎩 <strong>A carta escolhida é: ' + chosen.label + ' (' + chosen.rank + ' de ' + chosen.suit.name + ')</strong><br>🙌 Agradecemos a sua participação.<br>👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares';
-  speak('A carta escolhida é ' + chosen.rank + ' de ' + chosen.suit.name);
-  confetti({ particleCount: 300, spread: 160, origin: { y: 0.5 } });
-}
-
-document.getElementById('col1').addEventListener('click', ()=>chooseColumn(0));
-document.getElementById('col2').addEventListener('click', ()=>chooseColumn(1));
-document.getElementById('col3').addEventListener('click', ()=>chooseColumn(2));
-document.getElementById('reiniciar').addEventListener('click', ()=>startGame());
-document.getElementById('revelar').addEventListener('click', ()=>finalize());
-
-window.addEventListener('load', ()=>{ startGame(); });
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+let rodada=1,columns=[[],[],[]],selectedCards=[],voiceEnabled=true;
+document.getElementById('toggleVoice').onclick=()=>{voiceEnabled=!voiceEnabled;document.getElementById('toggleVoice').textContent=voiceEnabled?'🔊 Voz: Ligada':'🔇 Voz: Desligada';};
+function speak(t){if(!voiceEnabled)return;try{let u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
+function startGame(){rodada=1;document.getElementById('rodada').textContent=rodada;document.getElementById('resultado').textContent='Rodada: '+rodada+' de 3';document.getElementById('revelar').style.display='none';let deck=shuffle(Array.from(FULL_DECK));selectedCards=deck.slice(0,21);dealColumns(selectedCards);renderBoard(true);speak('Pense em uma carta entre as 21 mostradas. Em qual coluna ela está?');}
+function dealColumns(list){columns=[[],[],[]];for(let i=0;i<21;i++){columns[i%3].push(list[i]);}}
+function renderBoard(autoFlip){const board=document.getElementById('board');board.innerHTML='';for(let c=0;c<3;c++){const colDiv=document.createElement('div');colDiv.className='column';for(let i=0;i<columns[c].length;i++){const card=columns[c][i];const scene=document.createElement('div');scene.className='scene';const cardEl=document.createElement('div');cardEl.className='card';const front=document.createElement('div');front.className='face front';front.innerHTML='<div class="value-top '+(card.suit.color==='red'?'red':'black')+'">'+card.rank+card.suit.sym+'</div><div class="suit-center '+(card.suit.color==='red'?'red':'black')+'">'+card.suit.sym+'</div><div class="value-bottom '+(card.suit.color==='red'?'red':'black')+'">'+card.rank+card.suit.sym+'</div>';const back=document.createElement('div');back.className='face back';back.textContent='MATEMÁGICA';cardEl.appendChild(front);cardEl.appendChild(back);scene.appendChild(cardEl);colDiv.appendChild(scene);}board.appendChild(colDiv);}const all=document.querySelectorAll('.card');all.forEach(el=>el.classList.remove('revealed'));if(autoFlip){setTimeout(()=>{const cards=document.querySelectorAll('.card');cards.forEach((el,i)=>{setTimeout(()=>el.classList.add('revealed'),i*80);});},500);}}
+function chooseColumn(colIndex){if(rodada>3)return;let order;if(colIndex===0)order=[1,0,2];else if(colIndex===1)order=[0,1,2];else order=[0,2,1];let newList=[];for(let r=0;r<7;r++){for(let k=0;k<3;k++){let col=columns[order[k]];newList.push(col[r]);}}selectedCards=newList.slice();dealColumns(selectedCards);rodada+=1;document.getElementById('rodada').textContent=Math.min(rodada,3);if(rodada<=3){renderBoard(true);speak('Em qual coluna está agora a sua carta?');}else{document.getElementById('revelar').style.display='inline-block';speak('Clique em revelar carta para ver o resultado.');}}
+function finalize(){const chosen=selectedCards[10];document.getElementById('resultado').innerHTML='🎩 <strong>A carta escolhida é: '+chosen.label+' ('+chosen.rank+' de '+chosen.suit.name+')</strong><br>🙌 Agradecemos a sua participação.<br>👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares';speak('A carta escolhida é '+chosen.rank+' de '+chosen.suit.name);confetti({particleCount:300,spread:160,origin:{y:0.5}});}
+document.getElementById('col1').onclick=()=>chooseColumn(0);
+document.getElementById('col2').onclick=()=>chooseColumn(1);
+document.getElementById('col3').onclick=()=>chooseColumn(2);
+document.getElementById('reiniciar').onclick=()=>startGame();
+document.getElementById('revelar').onclick=()=>finalize();
+window.onload=()=>startGame();
 </script>
-
 <audio id="somMagico" src="som-magico.mp3" preload="auto"></audio>
-</body>
-</html>
+</body></html>
