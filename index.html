@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Adivinhe a Carta — Cartas Gigantes 🎩🃏</title>
+<title>Adivinhe a Carta — Cartas Gigantes V3 🎩🃏</title>
 <style>
   :root{
     --cardW:180px;
@@ -17,7 +17,7 @@
   .board{display:flex; gap:24px; justify-content:center; margin-top:20px; z-index:2; align-items:flex-start;}
   .column{display:flex; flex-direction:column; gap:16px; align-items:center;}
   .scene{width:var(--cardW); height:var(--cardH); perspective:1000px;}
-  .card{width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform .7s; border-radius:14px; box-shadow:0 14px 34px rgba(0,0,0,0.6); cursor:default; user-select:none;}
+  .card{width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform .7s; border-radius:14px; box-shadow:0 14px 34px rgba(0,0,0,0.6); cursor:pointer; user-select:none;}
   .card.revealed{transform:rotateY(180deg);}
   .face{position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:14px; display:flex; flex-direction:column; justify-content:space-between; padding:12px; font-weight:900; box-sizing:border-box; border:2px solid rgba(0,0,0,0.25);}
   .front{background:#fff; color:#000; transform:rotateY(180deg);}
@@ -34,26 +34,13 @@
   .avatars{margin-top:14px;}
   .avatar{width:110px; margin:8px; vertical-align:middle; border-radius:10px; border:1px solid rgba(255,255,255,0.06);}
   .estrelas{position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden;}
-  @media (max-width:900px){
-    :root{--cardW:140px; --cardH:200px;}
-    h1{font-size:24px}
-    .suit-center{font-size:48px}
-  }
-  @media (max-width:600px){
-    body{padding:12px}
-    .board{gap:12px}
-    :root{--cardW:110px; --cardH:160px}
-    .column{gap:12px}
-    .avatar{width:72px}
-    h1{font-size:20px}
-  }
 </style>
 </head>
 <body>
   <div class="estrelas" aria-hidden="true"></div>
   <header>
     <h1>🎩 Adivinhe a Carta — Cartas Gigantes</h1>
-    <p class="lead">Cartas gigantes para melhor visualização em telões e celulares. Elas começam viradas para baixo e fazem flip automático para revelar. Indique a coluna onde está a sua carta (1,2 ou 3). Repetimos 3 vezes e eu adivinho!</p>
+    <p class="lead">Escolha uma carta e informe em qual coluna ela está. Depois de 3 rodadas mágicas, sua carta será revelada!</p>
     <div class="avatars">
       <img src="avatar_barba.png" class="avatar" alt="Mago com barba">
       <img src="avatar_sem_barba.png" class="avatar" alt="Mago sem barba">
@@ -67,12 +54,9 @@
       <button class="primary" id="col2">Coluna 2</button>
       <button class="primary" id="col3">Coluna 3</button>
       <button class="ghost" id="reiniciar">🔄 Reiniciar</button>
+      <button class="ghost" id="toggleVoice">🔊 Voz: Ligada</button>
     </div>
     <div class="resultado" id="resultado">Rodada: <span id="rodada">1</span> de 3</div>
-    <div style="text-align:center; margin-top:10px; z-index:3;">
-      <button class="ghost" id="toggleVoice">🔊 Voz: Ligada</button>
-      <button class="ghost" id="toggleSound">🔈 Som mágico: Ligado</button>
-    </div>
   </main>
 
   <!-- VLibras -->
@@ -93,12 +77,21 @@ let rodada = 1;
 let columns = [[],[],[]];
 let selectedCards = [];
 let voiceEnabled = true;
-let soundEnabled = true;
 
-document.getElementById('toggleVoice').addEventListener('click', ()=>{ voiceEnabled=!voiceEnabled; document.getElementById('toggleVoice').textContent = voiceEnabled ? '🔊 Voz: Ligada' : '🔇 Voz: Desligada'; });
-document.getElementById('toggleSound').addEventListener('click', ()=>{ soundEnabled=!soundEnabled; document.getElementById('toggleSound').textContent = soundEnabled ? '🔈 Som mágico: Ligado' : '🔈 Som mágico: Desligado'; });
+document.getElementById('toggleVoice').addEventListener('click', ()=>{
+  voiceEnabled = !voiceEnabled;
+  document.getElementById('toggleVoice').textContent = voiceEnabled ? '🔊 Voz: Ligada' : '🔇 Voz: Desligada';
+});
 
-function speak(text){ if(!voiceEnabled) return; try{ const u=new SpeechSynthesisUtterance(text); u.lang='pt-BR'; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
+function speak(text){
+  if(!voiceEnabled) return;
+  try{
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='pt-BR';
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
 
 function startGame(){
   rodada = 1;
@@ -108,7 +101,7 @@ function startGame(){
   selectedCards = deck.slice(0,21);
   dealColumns(selectedCards);
   renderBoard(true);
-  speak('Pense em uma carta entre as 21 mostradas. Observe as cartas virando agora.');
+  speak('Pense em uma carta entre as 21 mostradas. Indique em qual coluna ela está.');
 }
 
 function dealColumns(list){
@@ -122,7 +115,6 @@ function renderBoard(autoFlip){
   for(let c=0;c<3;c++){
     const colDiv = document.createElement('div');
     colDiv.className = 'column';
-    colDiv.setAttribute('data-col', c+1);
     for(let i=0;i<columns[c].length;i++){
       const card = columns[c][i];
       const scene = document.createElement('div'); scene.className='scene';
@@ -163,9 +155,8 @@ function chooseColumn(colIndex){
   rodada += 1;
   document.getElementById('rodada').textContent = Math.min(rodada,3);
   if(rodada<=3){
-    const all = document.querySelectorAll('.card');
-    all.forEach((el,i)=>{ setTimeout(()=> el.classList.remove('revealed'), i*10); });
-    setTimeout(()=>{ renderBoard(true); speak('Coluna recebida. Em qual coluna está agora?'); }, 700);
+    renderBoard(true);
+    speak('Em qual coluna está agora a sua carta?');
   } else {
     finalize();
   }
@@ -175,21 +166,7 @@ function finalize(){
   const chosen = selectedCards[10];
   document.getElementById('resultado').innerHTML = '🎩 <strong>A carta escolhida é: ' + chosen.label + ' (' + chosen.rank + ' de ' + chosen.suit.name + ')</strong><br>🙌 Agradecemos a sua participação.<br>👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares';
   speak('A carta escolhida é ' + chosen.rank + ' de ' + chosen.suit.name);
-  if(soundEnabled) try{ document.getElementById('somMagico').play().catch(()=>{}); }catch(e){}
   confetti({ particleCount: 300, spread: 160, origin: { y: 0.5 } });
-  setTimeout(()=> showFinalOverlay(chosen), 800);
-}
-
-function showFinalOverlay(card){
-  const overlay = document.createElement('div');
-  overlay.style.position='fixed'; overlay.style.left=0; overlay.style.top=0; overlay.style.width='100%'; overlay.style.height='100%';
-  overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.6)'; overlay.style.zIndex=9999;
-  const box = document.createElement('div'); box.style.background='#fff'; box.style.color='#000'; box.style.padding='22px'; box.style.borderRadius='14px'; box.style.textAlign='center'; box.style.minWidth='280px';
-  box.innerHTML = '<div style="font-size:40px;font-weight:900">' + card.label + '</div>' + '<div style="font-size:22px;margin-top:12px">' + card.rank + ' de ' + card.suit.name + '</div>' +
-                  '<div style="margin-top:16px"><button class="primary" id="playAgain">🔄 Participar novamente</button></div>';
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-  document.getElementById('playAgain').addEventListener('click', ()=>{ document.body.removeChild(overlay); startGame(); });
 }
 
 document.getElementById('col1').addEventListener('click', ()=>chooseColumn(0));
@@ -197,13 +174,7 @@ document.getElementById('col2').addEventListener('click', ()=>chooseColumn(1));
 document.getElementById('col3').addEventListener('click', ()=>chooseColumn(2));
 document.getElementById('reiniciar').addEventListener('click', ()=>startGame());
 
-(function createStars(){
-  const c = document.querySelector('.estrelas');
-  for(let i=0;i<120;i++){ const s = document.createElement('div'); s.style.position='absolute'; s.style.left=(Math.random()*100)+'%'; s.style.top=(Math.random()*100)+'%'; s.style.width=(1+Math.random()*4)+'px'; s.style.height=s.style.width; s.style.background='rgba(255,255,255,'+(0.2+Math.random()*0.8)+')'; s.style.borderRadius='50%'; s.style.filter='blur(0.5px)'; s.style.opacity=0.9*(Math.random()); c.appendChild(s); }
-})();
-
 window.addEventListener('load', ()=>{ startGame(); });
-
 </script>
 
 <audio id="somMagico" src="som-magico.mp3" preload="auto"></audio>
